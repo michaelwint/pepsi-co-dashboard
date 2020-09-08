@@ -1,11 +1,20 @@
-import React from 'react';
-import Gauge from './Components/Gauge/Gauge'
+import React, { useEffect, useReducer } from 'react';
+import HomePage from './Pages/HomePage/HomePage';
+import { reducer } from './Reducer/Reducer'
+import WintNavbar from './Components/WintNavbar/WintNavbar'
+import { Route, Switch } from 'react-router-dom'
 import './App.css';
+import AboutPage from './Pages/AboutPage/AboutPage';
 
 function App() {
   return (
     <div className="App">
-      <Gauge></Gauge>
+      <WintNavbar></WintNavbar>
+      <br />
+      <Switch>
+        <Route path='/' component={HomePage} exact />
+        <Route path='/link' component={AboutPage} />
+      </Switch>
     </div>
   );
 }
