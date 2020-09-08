@@ -22,6 +22,9 @@ export default function AboutPage(props) {
                 <Col>
                     <FlowrateGauge data={data[0]}></FlowrateGauge>
                 </Col>
+                <Col>
+                    <FlowrateGauge data={data[0]}></FlowrateGauge>
+                </Col>
             </Row>
         </Container>
     );

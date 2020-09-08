@@ -22,6 +22,8 @@ export default function FlowrateGauge(props) {
                         customSegmentStops={props.data.thresholds}
                         segmentColors={["crimson", "gold", "limegreen", "gold", "crimson"]}
                         value={props.data.value}
+                        width={props.data.size ? props.data.size : 300}
+                        paddingVertical={30}
                     />
                 </Col>
             </Row>
