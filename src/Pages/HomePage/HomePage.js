@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Button from 'react-bootstrap/Button'
 import FlowrateGauge from '../../Components/FlowrateGauge/FlowrateGauge';
 import AlertTable from '../../Components/AlertTable/AlertTable'
+import Spinner from 'react-bootstrap/Spinner'
+import { store } from '../../Store/store'
+import { LOADING_FINISHED } from '../../Store/Action Types/actionTypes'
 
 export default function HomePage(props) {
     let data = [
@@ -14,7 +16,7 @@ export default function HomePage(props) {
             title: "Unknown Sources",
             thresholds: [0, 5, 10, 20, 50, 60],
             value: 12,
-            size: 600
+            size: 550
         },
         {
             id: 2,
@@ -85,16 +87,31 @@ export default function HomePage(props) {
             thresholds: [0, 5, 10, 20, 50, 60],
             value: 55,
             open: true
-        },
+        }
     ]
+
+    const isLoading = useContext(store).state.isLoading
+    const { dispatch } = useContext(store);
+    const axios = require('axios').default;
+
+
+    useEffect(() => {
+        // TODO: Wait for a route for the relevant data here
+        // axios.get("url").then(response => {
+        //     dispatch({ type: LOADING_FINISHED })
+        // })
+    }, [])
 
     return (
         <Container fluid>
+            { isLoading ? <Spinner animation="border" variant="primary" /> :
             <Row>
                 <Col xs={6}>
                     <FlowrateGauge data={data[0]}></FlowrateGauge>
-                    {/* <AlertTable></AlertTable>
-                    <AlertTable></AlertTable> */}
+                    <br />
+                    <br />
+                    <br />
+                    <AlertTable></AlertTable>
                 </Col>
                 <Col xs={6}>
                     <Row>
@@ -106,6 +123,7 @@ export default function HomePage(props) {
                     </Row>
                 </Col>
             </Row>
+            }
         </Container>
     );
 }

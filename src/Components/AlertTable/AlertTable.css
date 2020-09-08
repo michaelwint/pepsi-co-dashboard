@@ -1,0 +1,10 @@
+.unresolved-anomaly-row {
+    background: #fc3636;  /* fallback for old browsers */
+    background: linear-gradient(to right, #fc3636, #ff2828); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+.resolved-anomaly-row {
+    background: #fc3636;  /* fallback for old browsers */
+    background: linear-gradient(to right, #34e943, #4fdf23); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}

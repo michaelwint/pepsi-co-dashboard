@@ -1,36 +1,31 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table'
+import BootstrapTable from 'react-bootstrap-table-next';
+import filterFactory, { textFilter, numberFilter, dateFilter } from 'react-bootstrap-table2-filter';
+import './AlertTable.css'
 
 export default function AlertTable(props) {
+    let data = [
+        { id: 1, valveGroup: "V3301", measure: 26.5, date: "2020-04-16 12:00:00"},
+        { id: 2, valveGroup: "V3401", measure: 24.2, date: "2020-04-16 12:30:00"},
+        { id: 3, valveGroup: "V3401", measure: 33.3, date: "2020-04-16 13:00:00"},
+        { id: 4, valveGroup: "V3301", measure: undefined, date: "2020-04-16 14:00:00"},
+    ]
+
+    const columns = [
+        { dataField: 'id', text: '#' },
+        { dataField: 'valveGroup', text: 'Valve Name', filter: textFilter() },
+        { dataField: 'measure', text: 'Measure', filter: numberFilter() },
+        { dataField: 'date', text: 'Date', filter: dateFilter() }
+    ]
+
     return (
-        <Table striped bordered hover>
-            <thead>
-                <tr>
-                <th>#</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Username</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                <td>1</td>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                </tr>
-                <tr>
-                <td>2</td>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-                </tr>
-                <tr>
-                <td>3</td>
-                <td colSpan="2">Larry the Bird</td>
-                <td>@twitter</td>
-                </tr>
-            </tbody>
-        </Table>
+        <BootstrapTable
+            keyField='id'
+            data={ data }
+            columns={ columns }
+            filter={ filterFactory() }
+            filterPosition="top"
+        />
     )
 }
