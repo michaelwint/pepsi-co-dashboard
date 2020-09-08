@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactSpeedometer from 'react-d3-speedometer'
+import Badge from 'react-bootstrap/Badge'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -16,6 +17,9 @@ export default function FlowrateGauge(props) {
             </Row>
             <Row>
                 <Col className='gauge-container'>
+                    {
+                        (props.data.open !== undefined) ? ((props.data.open) ? <Badge variant="success">Open</Badge> : <Badge variant="danger">Closed</Badge>) : <></>
+                    }
                     <ReactSpeedometer
                         needleHeightRatio={0.8}
                         maxValue={props.data.thresholds[props.data.thresholds.length - 1]}
@@ -24,6 +28,7 @@ export default function FlowrateGauge(props) {
                         value={props.data.value}
                         width={props.data.size ? props.data.size : 300}
                         paddingVertical={30}
+                        paddingHorizontal={10}
                     />
                 </Col>
             </Row>
