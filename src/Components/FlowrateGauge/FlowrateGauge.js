@@ -26,7 +26,7 @@ export default function FlowrateGauge(props) {
                         maxValue={props.data.thresholds[props.data.thresholds.length - 1]}
                         customSegmentStops={props.data.thresholds}
                         segmentColors={["crimson", "gold", "limegreen", "gold", "crimson"]}
-                        value={props.data.value}
+                        value={parseFloat(props.data.value).toFixed(2)}
                         width={props.data.size ? props.data.size : 270}
                         paddingVertical={30}
                         currentValueText={"${value} m3/h"}

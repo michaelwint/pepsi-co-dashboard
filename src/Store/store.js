@@ -1,8 +1,13 @@
 import React, {createContext, useReducer} from 'react';
+import { TOGGLE_LOADING, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES } from './Action Types/actionTypes'
 
 const initialState = {
-    isLoading: false,
-    someVal: 1
+    serverUrl: "http://industrial-modeler-poc-1998904937.eu-west-1.elb.amazonaws.com:9010/api/",
+    HomePage: {
+      isLoading: true,
+      currentProductionFlowrates: {},
+      valveGroupCurrentFlowrates: {}
+    }
 };
 const store = createContext(initialState);
 const { Provider } = store;
@@ -10,8 +15,32 @@ const { Provider } = store;
 const StateProvider = ( { children } ) => {
   const [state, dispatch] = useReducer((state, action) => {
     switch(action.type) {
-      case 'action description':
-            return state;
+      case LOAD_CURRENT_PROD_SEGMENT_FLOWRATES: {
+          return {
+            ...state,
+            HomePage: {
+              ...state.HomePage,
+              currentProductionFlowrates: action.payload
+            }
+          }
+      }
+      case LOAD_VALVE_GROUP_CURRENT_FLOWRATES: {
+          return {
+            ...state,
+            HomePage: {
+              ...state.HomePage,
+              valveGroupCurrentFlowrates: action.payload
+            }
+          }
+      }
+      case TOGGLE_LOADING:
+            return {
+              ...state,
+              HomePage: {
+                ...state.HomePage,
+                isLoading: false
+              }
+            };
       default:
         throw new Error();
     };
