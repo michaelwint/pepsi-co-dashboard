@@ -12,11 +12,11 @@ export default function WintNavbar(props) {
                 />
             </Navbar.Brand>
             <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="mr-auto">
-                    {/* <Nav.Link href="/">Home</Nav.Link>
+                {/* <Nav className="mr-auto">
+                    <Nav.Link href="/">Home</Nav.Link>
                     <Nav.Link href="/ValveGroupFlowrates">Valve Groups</Nav.Link>
-                    <Nav.Link href="/About">About</Nav.Link> */}
-                </Nav>
+                    <Nav.Link href="/About">About</Nav.Link>
+                </Nav> */}
             </Navbar.Collapse>
         </Navbar>
     )

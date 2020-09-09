@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect } from 'react';
 
 import Container from 'react-bootstrap/Container'
 import Button from 'react-bootstrap/Button'
+import Dropdown from 'react-bootstrap/Dropdown'
+import DropdownButton from 'react-bootstrap/DropdownButton'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import FlowrateGauge from '../../Components/FlowrateGauge/FlowrateGauge';
@@ -9,7 +11,7 @@ import AlertTable from '../../Components/AlertTable/AlertTable'
 import Spinner from 'react-bootstrap/Spinner'
 import { FaSync } from 'react-icons/fa'
 import { store } from '../../Store/store'
-import { LOADING_STARTED, LOADING_ENDED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, LOADING_FINISHED } from '../../Store/Action Types/actionTypes'
+import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE } from '../../Store/Action Types/actionTypes'
 import { isEmptyObject } from 'jquery';
 
 export default function HomePage(props) {
@@ -17,6 +19,7 @@ export default function HomePage(props) {
     const { dispatch } = useContext(store);
     const serverUrl = useContext(store).state.serverUrl;
     const isLoading = useContext(store).state.HomePage.isLoading;
+    const refreshRate = useContext(store).state.HomePage.refreshRate;
     const currentProductionFlowrates = useContext(store).state.HomePage.currentProductionFlowrates;
     const valveGroupCurrentFlowrates = useContext(store).state.HomePage.valveGroupCurrentFlowrates;
 
@@ -79,6 +82,15 @@ export default function HomePage(props) {
     }
 
     useEffect(() => {
+        const intervalId = setInterval(() => {
+          loadData()
+        }, refreshRate)
+      
+        return () => clearInterval(intervalId);
+      
+      }, [serverUrl, useState])
+
+    useEffect(() => {
         loadData();
     }, [])
 
@@ -86,16 +98,31 @@ export default function HomePage(props) {
         loadData();
     }
 
+    const setRefreshRate = (selectedRefreshRate) => {
+        dispatch({ type: SET_REFRESH_RATE, payload: selectedRefreshRate })
+    }
+
     return (
         <Container fluid>
             <Row>
-                <Col xs={1}>
-                    <Button variant="success" disabled={isLoading} onClick={onRefreshClick}>
-                        { isLoading ? <Spinner animation="border" size="sm"/> : <FaSync></FaSync> }
-                    </Button>
+                <Col xs={2}>
+                    <Row>
+                        <Col xs={2}>
+                            <Button variant="primary" disabled={isLoading} onClick={onRefreshClick}>
+                                { isLoading ? <Spinner animation="border" size="sm"/> : <FaSync></FaSync> }
+                            </Button>
+                        </Col>
+                        <Col xs={2}>
+                            <DropdownButton title={(refreshRate / 1000) + "s"}>
+                                <Dropdown.Item onSelect={() => setRefreshRate(5000)}>5s</Dropdown.Item>
+                                <Dropdown.Item onSelect={() => setRefreshRate(10000)}>10s</Dropdown.Item>
+                                <Dropdown.Item onSelect={() => setRefreshRate(30000)}>30s</Dropdown.Item>
+                            </DropdownButton>
+                        </Col>
+                    </Row>
                 </Col>
             </Row>
-            { isEmptyObject(valveGroupCurrentFlowrates) ? <Spinner animation="border" variant="primary" /> :
+            { !isEmptyObject(valveGroupCurrentFlowrates) &&
             <Row>
                 <Col xs={6}>
                     <FlowrateGauge data={productionSegmentData}></FlowrateGauge>
