@@ -1,5 +1,5 @@
 import React, {createContext, useReducer} from 'react';
-import { TOGGLE_LOADING, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES } from './Action Types/actionTypes'
+import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES } from './Action Types/actionTypes'
 
 const initialState = {
     serverUrl: "http://industrial-modeler-poc-1998904937.eu-west-1.elb.amazonaws.com:9010/api/",
@@ -33,14 +33,22 @@ const StateProvider = ( { children } ) => {
             }
           }
       }
-      case TOGGLE_LOADING:
+      case LOADING_STARTED:
             return {
               ...state,
               HomePage: {
                 ...state.HomePage,
-                isLoading: false
+                isLoading: true
               }
             };
+      case LOADING_FINISHED:
+        return {
+          ...state,
+          HomePage: {
+            ...state.HomePage,
+            isLoading: false
+          }
+        };
       default:
         throw new Error();
     };

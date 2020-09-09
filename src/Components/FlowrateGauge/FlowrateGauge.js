@@ -8,12 +8,13 @@ import Col from 'react-bootstrap/Col'
 import './FlowrateGauge.css'
 
 export default function FlowrateGauge(props) {
+    const date = new Date(props.data.date).toUTCString();
     return (
         <Container fluid>
             <Row>
                 <Col>
                     <h4>{props.data.title}</h4>
-                    <h6>{props.data.date}</h6>
+                    <h6>{date}</h6>
                 </Col>
             </Row>
             <Row>

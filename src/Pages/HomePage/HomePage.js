@@ -9,7 +9,8 @@ import AlertTable from '../../Components/AlertTable/AlertTable'
 import Spinner from 'react-bootstrap/Spinner'
 import { FaSync } from 'react-icons/fa'
 import { store } from '../../Store/store'
-import { TOGGLE_LOADING, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES } from '../../Store/Action Types/actionTypes'
+import { LOADING_STARTED, LOADING_ENDED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, LOADING_FINISHED } from '../../Store/Action Types/actionTypes'
+import { isEmptyObject } from 'jquery';
 
 export default function HomePage(props) {
     const axios = require('axios').default;
@@ -28,8 +29,8 @@ export default function HomePage(props) {
         date: '2020-04-16 12:30:00'
     }
 
-    const loadData = () => {
-
+    const loadData = async () => {
+        dispatch({ type: LOADING_STARTED });
         // axios.get(serverUrl + "currentProductionFlowrates").then(response => {
         //     let responseData = response.data._embedded.currentProductionFlowrates;
 
@@ -50,8 +51,7 @@ export default function HomePage(props) {
 
         //     dispatch({ type: LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, payload: customData });
         // }).then(() => {
-        axios.get(serverUrl + "valveGroupCurrentFlowrates").then(response => {
-            debugger;
+        await axios.get(serverUrl + "valveGroupCurrentFlowrates").then(response => {
             let responseData = response.data._embedded.valveGroupCurrentFlowrates;
             let customData = [];
 
@@ -73,7 +73,7 @@ export default function HomePage(props) {
             })
 
             dispatch({ type: LOAD_VALVE_GROUP_CURRENT_FLOWRATES, payload: customData });
-            dispatch({ type: TOGGLE_LOADING });
+            dispatch({ type: LOADING_FINISHED });
         })
         // })
     }
@@ -83,25 +83,23 @@ export default function HomePage(props) {
     }, [])
 
     const onRefreshClick = () => {
-        dispatch({ type: TOGGLE_LOADING });
         loadData();
-        dispatch({ type: TOGGLE_LOADING });
     }
 
     return (
         <Container fluid>
             <Row>
                 <Col xs={1}>
-                    <Button variant="success" disabled={isLoading} onClick={onRefreshClick}><FaSync></FaSync></Button>
+                    <Button variant="success" disabled={isLoading} onClick={onRefreshClick}>
+                        { isLoading ? <Spinner animation="border" size="sm"/> : <FaSync></FaSync> }
+                    </Button>
                 </Col>
             </Row>
-            { isLoading ? <Spinner animation="border" variant="primary" /> :
+            { isEmptyObject(valveGroupCurrentFlowrates) ? <Spinner animation="border" variant="primary" /> :
             <Row>
                 <Col xs={6}>
                     <FlowrateGauge data={productionSegmentData}></FlowrateGauge>
-                    <br />
-                    <br />
-                    <br />
+                    <br /><br /><br />
                     <AlertTable></AlertTable>
                 </Col>
                 <Col xs={6}>
