@@ -13,6 +13,7 @@ export default function FlowrateGauge(props) {
             <Row>
                 <Col>
                     <h4>{props.data.title}</h4>
+                    <h6>{props.data.date}</h6>
                 </Col>
             </Row>
             <Row>

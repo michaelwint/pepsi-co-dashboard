@@ -10,14 +10,16 @@ import { store } from '../../Store/store'
 import { LOADING_FINISHED } from '../../Store/Action Types/actionTypes'
 
 export default function HomePage(props) {
+    let productionSegmentData = {
+        id: 1,
+        title: 'production segment',
+        thresholds: [0, 5, 10, 20, 50, 60],
+        value: 16,
+        size: 550,
+        date: '2020-04-16 12:30:00'
+    }
+
     let data = [
-        {
-            id: 1,
-            title: "Unknown Sources",
-            thresholds: [0, 5, 10, 20, 50, 60],
-            value: 12,
-            size: 550
-        },
         {
             id: 2,
             title: "Spray Bars 2",
@@ -107,7 +109,7 @@ export default function HomePage(props) {
             { isLoading ? <Spinner animation="border" variant="primary" /> :
             <Row>
                 <Col xs={6}>
-                    <FlowrateGauge data={data[0]}></FlowrateGauge>
+                    <FlowrateGauge data={productionSegmentData}></FlowrateGauge>
                     <br />
                     <br />
                     <br />
@@ -115,7 +117,7 @@ export default function HomePage(props) {
                 </Col>
                 <Col xs={6}>
                     <Row>
-                        { data.filter((currGauge) => { return currGauge.size === undefined }).map((currGauge) => {
+                        { data.map((currGauge) => {
                             return <Col xs={4}>
                                 <FlowrateGauge data={currGauge}></FlowrateGauge>
                             </Col>
