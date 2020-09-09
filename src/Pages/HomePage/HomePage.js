@@ -11,7 +11,7 @@ import AlertTable from '../../Components/AlertTable/AlertTable'
 import Spinner from 'react-bootstrap/Spinner'
 import { FaSync } from 'react-icons/fa'
 import { store } from '../../Store/store'
-import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE } from '../../Store/Action Types/actionTypes'
+import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE } from '../../Store/ActionTypes/actionTypes'
 import { isEmptyObject } from 'jquery'
 
 export default function HomePage(props) {
