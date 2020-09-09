@@ -6,13 +6,13 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import FlowrateGauge from '../../Components/FlowrateGauge/FlowrateGauge';
+import FlowrateGauge from '../../Components/FlowrateGauge/FlowrateGauge'
 import AlertTable from '../../Components/AlertTable/AlertTable'
 import Spinner from 'react-bootstrap/Spinner'
 import { FaSync } from 'react-icons/fa'
 import { store } from '../../Store/store'
 import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE } from '../../Store/Action Types/actionTypes'
-import { isEmptyObject } from 'jquery';
+import { isEmptyObject } from 'jquery'
 
 export default function HomePage(props) {
     const axios = require('axios').default;
@@ -23,15 +23,6 @@ export default function HomePage(props) {
     const currentProductionFlowrates = useContext(store).state.HomePage.currentProductionFlowrates;
     const valveGroupCurrentFlowrates = useContext(store).state.HomePage.valveGroupCurrentFlowrates;
 
-    let productionSegmentData = {
-        id: 1,
-        title: 'production segment',
-        thresholds: [0, 5, 10, 20, 50, 60],
-        value: 16,
-        size: 550,
-        date: '2020-04-16 12:30:00'
-    }
-
     const loadData = async () => {
         dispatch({ type: LOADING_STARTED });
 
@@ -40,7 +31,7 @@ export default function HomePage(props) {
             let responseData = response.data._embedded.currentProductionFlowrates[0];
 
             let customData = {
-                title: responseData.product_name + " / Stage " + responseData.stage_name + " " + responseData.stage_description,
+                title: responseData.product_name + " / Stage - " + responseData.stage_name + " " + responseData.stage_description,
                 thresholds: [
                     0,
                     responseData.limits_alertflowratemin,
@@ -85,6 +76,13 @@ export default function HomePage(props) {
         })
     }
 
+    // Load the data on component initial mount
+    useEffect(() => {
+        if (isEmptyObject(currentProductionFlowrates) || isEmptyObject(valveGroupCurrentFlowrates))
+            loadData();
+    }, []);
+
+    // Refresh the display every x seconds (Default is every 5 seconds)
     useEffect(() => {
         const intervalId = setInterval(() => {
           loadData()
@@ -92,16 +90,15 @@ export default function HomePage(props) {
       
         return () => clearInterval(intervalId);
       
-      }, [serverUrl, useState])
+      }, [serverUrl, useState]
+    );
 
-    useEffect(() => {
-        loadData();
-    }, [])
-
+    // Occurs when clicking the Refresh button
     const onRefreshClick = () => {
         loadData();
     }
 
+    // Occurs when selecting a refresh rate in the display
     const setRefreshRate = (selectedRefreshRate) => {
         dispatch({ type: SET_REFRESH_RATE, payload: selectedRefreshRate })
     }
@@ -116,13 +113,13 @@ export default function HomePage(props) {
                                 { isLoading ? <Spinner animation="border" size="sm"/> : <FaSync></FaSync> }
                             </Button>
                         </Col>
-                        <Col xs={2}>
+                        {/* <Col xs={2}>
                             <DropdownButton title={(refreshRate / 1000) + "s"}>
                                 <Dropdown.Item onSelect={() => setRefreshRate(5000)}>5s</Dropdown.Item>
                                 <Dropdown.Item onSelect={() => setRefreshRate(10000)}>10s</Dropdown.Item>
                                 <Dropdown.Item onSelect={() => setRefreshRate(30000)}>30s</Dropdown.Item>
                             </DropdownButton>
-                        </Col>
+                        </Col> */}
                     </Row>
                 </Col>
             </Row>
