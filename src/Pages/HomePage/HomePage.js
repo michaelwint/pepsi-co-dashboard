@@ -34,51 +34,55 @@ export default function HomePage(props) {
 
     const loadData = async () => {
         dispatch({ type: LOADING_STARTED });
-        // axios.get(serverUrl + "currentProductionFlowrates").then(response => {
-        //     let responseData = response.data._embedded.currentProductionFlowrates;
 
-        //     let customData = {
-        //         title: responseData.productName + " " + responseData.stage_description,
-        //         thresholds: [
-        //             0,
-        //             responseData.limits_alertflowratemin,
-        //             responseData.limits_warnflowratemin,
-        //             responseData.limits_warnflowratemax,
-        //             responseData.limits_alertflowratemax,
-        //             responseData.limits_alertflowratemax * 1.1
-        //         ],
-        //         value: responseData.flowratemean,
-        //         size: 550,
-        //         date: responseData.timestamp
-        //     }
+        // Load the current Production flowrate in the main gauge
+        await axios.get(serverUrl + "currentProductionFlowrates").then(response => {
+            let responseData = response.data._embedded.currentProductionFlowrates[0];
 
-        //     dispatch({ type: LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, payload: customData });
-        // }).then(() => {
-        await axios.get(serverUrl + "valveGroupCurrentFlowrates").then(response => {
-            let responseData = response.data._embedded.valveGroupCurrentFlowrates;
-            let customData = [];
+            let customData = {
+                title: responseData.product_name + " / Stage " + responseData.stage_name + " " + responseData.stage_description,
+                thresholds: [
+                    0,
+                    responseData.limits_alertflowratemin,
+                    responseData.limits_warnflowratemin,
+                    responseData.limits_warnflowratemax,
+                    responseData.limits_alertflowratemax,
+                    responseData.limits_alertflowratemax * 1.1
+                ],
+                value: responseData.flowratemean,
+                size: 550,
+                date: responseData.timestamp
+            }
 
-            responseData.map((currValve) => {
-                customData.push({
-                    title: currValve.valvegroup_name,
-                    thresholds: [
-                        0,
-                        currValve.limits_alertflowratemin,
-                        currValve.limits_warnflowratemin,
-                        currValve.limits_warnflowratemax,
-                        currValve.limits_alertflowratemax,
-                        currValve.limits_alertflowratemax * 1.1
-                    ],
-                    value: currValve.measure,
-                    open: currValve.open,
-                    date: currValve.starttime
+            dispatch({ type: LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, payload: customData });
+        }).then(() => {
+
+            // Load the flowrate for every Valve Group
+            axios.get(serverUrl + "valveGroupCurrentFlowrates").then(response => {
+                let responseData = response.data._embedded.valveGroupCurrentFlowrates;
+                let customData = [];
+
+                responseData.map((currValve) => {
+                    customData.push({
+                        title: currValve.valvegroup_name,
+                        thresholds: [
+                            0,
+                            currValve.limits_alertflowratemin,
+                            currValve.limits_warnflowratemin,
+                            currValve.limits_warnflowratemax,
+                            currValve.limits_alertflowratemax,
+                            currValve.limits_alertflowratemax * 1.1
+                        ],
+                        value: currValve.measure,
+                        open: currValve.open,
+                        date: currValve.starttime
+                    })
                 })
-            })
 
-            dispatch({ type: LOAD_VALVE_GROUP_CURRENT_FLOWRATES, payload: customData });
-            dispatch({ type: LOADING_FINISHED });
+                dispatch({ type: LOAD_VALVE_GROUP_CURRENT_FLOWRATES, payload: customData });
+                dispatch({ type: LOADING_FINISHED });
+            })
         })
-        // })
     }
 
     useEffect(() => {
@@ -125,7 +129,7 @@ export default function HomePage(props) {
             { !isEmptyObject(valveGroupCurrentFlowrates) &&
             <Row>
                 <Col xs={6}>
-                    <FlowrateGauge data={productionSegmentData}></FlowrateGauge>
+                    <FlowrateGauge data={currentProductionFlowrates}></FlowrateGauge>
                     <br /><br /><br />
                     <AlertTable></AlertTable>
                 </Col>
