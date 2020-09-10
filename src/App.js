@@ -1,9 +1,10 @@
 import React, { useEffect, useReducer } from 'react';
 import HomePage from './Pages/HomePage/HomePage';
 import WintNavbar from './Components/WintNavbar/WintNavbar'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom';
+import FlowratesPage from './Pages/FlowratesPage/FlowratesPage';
 import './App.css';
-import AboutPage from './Pages/AboutPage/AboutPage';
+import { FlowratesPageStateProvider } from './Store/flowratesPageStore';
 
 function App() {
   return (
@@ -12,7 +13,7 @@ function App() {
       <br />
       <Switch>
         <Route path='/' component={HomePage} exact />
-        <Route path='/About' component={AboutPage} />
+        <Route path='/Flowrates' component={FlowratesPage} />
       </Switch>
     </div>
   );

@@ -13,6 +13,7 @@ import { FaSync } from 'react-icons/fa'
 import { store } from '../../Store/store'
 import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE } from '../../Store/ActionTypes/actionTypes'
 import { isEmptyObject } from 'jquery'
+import FlowrateChart from '../../Components/FlowrateChart/FlowrateChart';
 
 export default function HomePage(props) {
     const axios = require('axios').default;
@@ -128,6 +129,9 @@ export default function HomePage(props) {
                 <Col xs={6}>
                     <FlowrateGauge data={currentProductionFlowrates}></FlowrateGauge>
                     <br /><br /><br />
+                    <br /><br /><br />
+                    <FlowrateChart title="Hard Water"></FlowrateChart>
+                    <FlowrateChart title="Soft Water"></FlowrateChart>
                     <AlertTable></AlertTable>
                 </Col>
                 <Col xs={6}>
