@@ -130,8 +130,8 @@ export default function HomePage(props) {
                     <FlowrateGauge data={currentProductionFlowrates}></FlowrateGauge>
                     <br /><br /><br />
                     <br /><br /><br />
-                    <FlowrateChart title="Hard Water"></FlowrateChart>
-                    <FlowrateChart title="Soft Water"></FlowrateChart>
+                    <FlowrateChart title="Hard Water" color={"green"}></FlowrateChart>
+                    <FlowrateChart title="Soft Water" color={"teal"}></FlowrateChart>
                     <AlertTable></AlertTable>
                 </Col>
                 <Col xs={6}>

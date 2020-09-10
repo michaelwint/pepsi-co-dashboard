@@ -2,7 +2,7 @@ import React from 'react';
 import { TimeSeries, Index } from "pondjs";
 import data from "./data";
 import { Container, Row, Col } from 'react-bootstrap'
-import { Resizable, Charts, ChartContainer, ChartRow, YAxis, LineChart, styler} from "react-timeseries-charts";
+import { Resizable, Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline, styler} from "react-timeseries-charts";
 
 export default function FlowrateChart(props) {
     const series = new TimeSeries({
@@ -18,46 +18,40 @@ export default function FlowrateChart(props) {
       const style = styler([
         {
           key: "value",
-          color: "#A5C8E1",
-          selected: "#2CB1CF",
+          color: props.color,
           width: 3
         }
       ]);
 
     return (
-        <Container>
-            <Row>
-                <Col>
-                    {props.title}
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                <Resizable>
-                  <ChartContainer timeRange={series.range()}>
-                    <ChartRow height="150">
-                        <YAxis
-                        id="rain"
-                        label="Value"
-                        width="70"
-                        type="linear"
-                        />
-                        <Charts>
+      <Container>
+          <Row>
+              <Col>
+                  {props.title}
+              </Col>
+          </Row>
+          <Row>
+              <Col>
+              <Resizable>
+                <ChartContainer timeRange={series.range()}>
+                  <ChartRow height="150">
+                      <YAxis id="flowrate" label="Flowrate (m3/h)" width="70" type="linear" max={12} />
+                      <Charts>
                         <LineChart
-                            axis="rain"
+                            axis="flowrate"
                             style={style}
                             spacing={1}
                             columns={["value"]}
                             series={series}
                             minBarHeight={1}
                         />
-                        </Charts>
-                    </ChartRow>
-                  </ChartContainer>
-                </Resizable>
-                </Col>
-            </Row>
-        </Container>
-
-      )
+                        <Baseline axis="flowrate" style={style} value={series.avg()} label="Avg"/>
+                      </Charts>
+                  </ChartRow>
+                </ChartContainer>
+              </Resizable>
+              </Col>
+          </Row>
+      </Container>
+    )
 }
