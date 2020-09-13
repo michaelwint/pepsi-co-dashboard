@@ -29,10 +29,9 @@ export default function HomePage(props) {
     const hardWaterData = useContext(store).state.HomePage.hardWaterData;
     const softWaterData = useContext(store).state.HomePage.softWaterData;
     const [showAlert, setShowAlert] = useState(false);
-    const [loadingError, setLoadingError] = useState(false);
 
     const displayError = () => {
-        setLoadingError(true);
+        dispatch({ type: LOADING_FINISHED})
         setShowAlert(true);
     }
 
@@ -133,9 +132,7 @@ export default function HomePage(props) {
     // Refresh the display every x seconds (Default is every 5 seconds)
     useEffect(() => {
         const intervalId = setInterval(() => {
-            if (!loadingError) {
-                loadData()
-            }
+            loadData();
         }, refreshRate)
       
         return () => clearInterval(intervalId);
