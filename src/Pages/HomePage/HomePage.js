@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 
 import Container from 'react-bootstrap/Container'
 import Button from 'react-bootstrap/Button'
+import Toast from 'react-bootstrap/Toast'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import Row from 'react-bootstrap/Row'
@@ -11,9 +12,11 @@ import AlertTable from '../../Components/AlertTable/AlertTable'
 import Spinner from 'react-bootstrap/Spinner'
 import { FaSync } from 'react-icons/fa'
 import { store } from '../../Store/store'
-import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE } from '../../Store/ActionTypes/actionTypes'
+import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE, LOAD_HARD_SOFT_FLOWRATES } from '../../Store/ActionTypes/actionTypes'
 import { isEmptyObject } from 'jquery'
 import FlowrateChart from '../../Components/FlowrateChart/FlowrateChart';
+
+import './HomePage.css'
 
 export default function HomePage(props) {
     const axios = require('axios').default;
@@ -23,6 +26,15 @@ export default function HomePage(props) {
     const refreshRate = useContext(store).state.HomePage.refreshRate;
     const currentProductionFlowrates = useContext(store).state.HomePage.currentProductionFlowrates;
     const valveGroupCurrentFlowrates = useContext(store).state.HomePage.valveGroupCurrentFlowrates;
+    const hardWaterData = useContext(store).state.HomePage.hardWaterData;
+    const softWaterData = useContext(store).state.HomePage.softWaterData;
+    const [showAlert, setShowAlert] = useState(false);
+    const [loadingError, setLoadingError] = useState(false);
+
+    const displayError = () => {
+        setLoadingError(true);
+        setShowAlert(true);
+    }
 
     const loadData = async () => {
         dispatch({ type: LOADING_STARTED });
@@ -47,7 +59,7 @@ export default function HomePage(props) {
             }
 
             dispatch({ type: LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, payload: customData });
-        }).then(() => {
+        }).catch(error => displayError()).then(() => {
 
             // Load the flowrate for every Valve Group
             axios.get(serverUrl + "valveGroupCurrentFlowrates").then(response => {
@@ -72,8 +84,43 @@ export default function HomePage(props) {
                 })
 
                 dispatch({ type: LOAD_VALVE_GROUP_CURRENT_FLOWRATES, payload: customData });
-                dispatch({ type: LOADING_FINISHED });
             })
+        }).catch(error => displayError()).then(() => {
+
+            // Load the Har d& Soft flowrates
+            axios.get(serverUrl + "pepsicoSummary/latest?secondsBack=360").then(response => {
+                let responseData = response.data._embedded;
+
+                // Init Hard Water min & max values
+                let hardWaterData = {
+                    maxVal: responseData.summary.H2O_Hard_max,
+                    minVal: responseData.summary.H2O_Hard_min,
+                    values: []
+                };
+
+                // Init Soft Water min & max values
+                let softWaterData = {
+                    maxVal: responseData.summary.H2O_Zacht_max,
+                    minVal: responseData.summary.H2O_Zacht_min,
+                    values: []
+                };
+
+                // Init Hard & Soft Water given values
+                response.pepsioCoSummary.map((currVal) => {
+                    hardWaterData.values.push({
+                        timestamp: currVal.timestamp,
+                        measure: currVal.H2O_Hard
+                    });
+
+                    softWaterData.values.push({
+                        timestamp: currVal.timestamp,
+                        measure: currVal.H2O_Zacht
+                    });
+                })
+
+                dispatch({ type: LOAD_HARD_SOFT_FLOWRATES, payload: { hardWaterData, softWaterData } })
+                dispatch({ type: LOADING_FINISHED });
+            }).catch(error => displayError())
         })
     }
 
@@ -86,12 +133,14 @@ export default function HomePage(props) {
     // Refresh the display every x seconds (Default is every 5 seconds)
     useEffect(() => {
         const intervalId = setInterval(() => {
-          loadData()
+            if (!loadingError) {
+                loadData()
+            }
         }, refreshRate)
       
         return () => clearInterval(intervalId);
       
-      }, [serverUrl, useState]
+      }, [/*serverUrl, useState*/]
     );
 
     // Occurs when clicking the Refresh button
@@ -129,9 +178,8 @@ export default function HomePage(props) {
                 <Col xs={6}>
                     <FlowrateGauge data={currentProductionFlowrates}></FlowrateGauge>
                     <br /><br /><br />
-                    <br /><br /><br />
-                    <FlowrateChart title="Hard Water" color={"green"}></FlowrateChart>
-                    <FlowrateChart title="Soft Water" color={"teal"}></FlowrateChart>
+                    <FlowrateChart title="Hard Water" data={hardWaterData} color={"green"}></FlowrateChart>
+                    <FlowrateChart title="Soft Water" data={softWaterData} color={"teal"}></FlowrateChart>
                     <AlertTable></AlertTable>
                 </Col>
                 <Col xs={6}>
@@ -145,6 +193,11 @@ export default function HomePage(props) {
                 </Col>
             </Row>
             }
+            <div style={{ position: 'absolute', bottom: 0, left: 0, width: '300px', margin: '20px'}} >
+                <Toast style={{color: 'white', backgroundColor: '#ff3043'}} autohide show={showAlert} onClose={() => setShowAlert(false)} >
+                    <Toast.Body><strong >Error loading information</strong></Toast.Body>
+                </Toast>
+            </div>
         </Container>
     );
 }

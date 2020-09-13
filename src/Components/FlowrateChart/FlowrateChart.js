@@ -1,6 +1,5 @@
 import React from 'react';
 import { TimeSeries, Index } from "pondjs";
-import data from "./data";
 import { Container, Row, Col } from 'react-bootstrap'
 import { Resizable, Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline, styler} from "react-timeseries-charts";
 
@@ -8,13 +7,12 @@ export default function FlowrateChart(props) {
     const series = new TimeSeries({
         name: "hilo_rainfall",
         columns: ["index", "value"],
-        points: data.values.map(([d, value]) => [
+        points: props.data.values.map(([d, value]) => [
           Index.getIndexString("1h", new Date(d)),
           value
         ])
       });
-  
-      console.log("series is ", series);
+
       const style = styler([
         {
           key: "value",
