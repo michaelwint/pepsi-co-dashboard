@@ -12,6 +12,7 @@ import AlertTable from '../../Components/AlertTable/AlertTable'
 import Spinner from 'react-bootstrap/Spinner'
 import { FaSync } from 'react-icons/fa'
 import { store } from '../../Store/store'
+import { homePageStore } from '../../Store/homePageStore'
 import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE, LOAD_HARD_SOFT_FLOWRATES } from '../../Store/ActionTypes/actionTypes'
 import { isEmptyObject } from 'jquery'
 import FlowrateChart from '../../Components/FlowrateChart/FlowrateChart';
@@ -30,9 +31,10 @@ export default function HomePage(props) {
     const softWaterData = useContext(store).state.HomePage.softWaterData;
     const [showAlert, setShowAlert] = useState(false);
 
-    const displayError = () => {
+    const displayError = (error) => {
         dispatch({ type: LOADING_FINISHED})
         setShowAlert(true);
+        console.log(error)
     }
 
     const loadData = async () => {
@@ -58,7 +60,7 @@ export default function HomePage(props) {
             }
 
             dispatch({ type: LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, payload: customData });
-        }).catch(error => displayError()).then(() => {
+        }).catch(error => displayError(error)).then(() => {
 
             // Load the flowrate for every Valve Group
             axios.get(serverUrl + "valveGroupCurrentFlowrates").then(response => {
@@ -84,42 +86,47 @@ export default function HomePage(props) {
 
                 dispatch({ type: LOAD_VALVE_GROUP_CURRENT_FLOWRATES, payload: customData });
             })
-        }).catch(error => displayError()).then(() => {
+        }).catch(error => displayError(error)).then(() => {
 
             // Load the Har d& Soft flowrates
             axios.get(serverUrl + "pepsicoSummary/latest?secondsBack=360").then(response => {
-                let responseData = response.data._embedded;
+                let responseData = response.data;
 
                 // Init Hard Water min & max values
                 let hardWaterData = {
-                    maxVal: responseData.summary.H2O_Hard_max,
-                    minVal: responseData.summary.H2O_Hard_min,
+                    maxVal: responseData.h2O_Hard_max,
+                    minVal: responseData.h2O_Hard_min,
                     values: []
                 };
 
                 // Init Soft Water min & max values
                 let softWaterData = {
-                    maxVal: responseData.summary.H2O_Zacht_max,
-                    minVal: responseData.summary.H2O_Zacht_min,
+                    maxVal: responseData.h2O_Zacht_max,
+                    minVal: responseData.h2O_Zacht_min,
                     values: []
                 };
 
-                // Init Hard & Soft Water given values
-                response.pepsioCoSummary.map((currVal) => {
-                    hardWaterData.values.push({
-                        timestamp: currVal.timestamp,
-                        measure: currVal.H2O_Hard
-                    });
+                for (let i = responseData.summaries.length - 1; i >= 0; i--) {
+                    hardWaterData.values.push([responseData.summaries[i].timestamp, responseData.summaries[i].h2O_Hard]);
+                    softWaterData.values.push([responseData.summaries[i].timestamp, responseData.summaries[i].h2O_Zacht]);
+                }
 
-                    softWaterData.values.push({
-                        timestamp: currVal.timestamp,
-                        measure: currVal.H2O_Zacht
-                    });
-                })
+                // Init Hard & Soft Water given values
+                // responseData.summaries.map((currVal) => {
+                //     // hardWaterData.values.push({
+                //     //     timestamp: currVal.timestamp,
+                //     //     measure: currVal.h2O_Hard
+                //     // });
+
+                //     hardWaterData.values.push([currVal.timestamp, currVal.h2O_Hard * 100]);
+                //     softWaterData.values.push([currVal.timestamp, currVal.h2O_Zacht]);
+                // })
+
+                console.log(hardWaterData);
 
                 dispatch({ type: LOAD_HARD_SOFT_FLOWRATES, payload: { hardWaterData, softWaterData } })
                 dispatch({ type: LOADING_FINISHED });
-            }).catch(error => displayError())
+            }).catch(error => displayError(error))
         })
     }
 
@@ -170,7 +177,7 @@ export default function HomePage(props) {
                     </Row>
                 </Col>
             </Row>
-            { !isEmptyObject(valveGroupCurrentFlowrates) &&
+            { !isEmptyObject(valveGroupCurrentFlowrates) && !isEmptyObject(hardWaterData) && !isEmptyObject(softWaterData) &&
             <Row>
                 <Col xs={6}>
                     <FlowrateGauge data={currentProductionFlowrates}></FlowrateGauge>

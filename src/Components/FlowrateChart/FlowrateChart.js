@@ -1,4 +1,5 @@
 import React from 'react';
+import data from './data'
 import { TimeSeries, Index } from "pondjs";
 import { Container, Row, Col } from 'react-bootstrap'
 import { Resizable, Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline, styler} from "react-timeseries-charts";
@@ -6,9 +7,11 @@ import { Resizable, Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline
 export default function FlowrateChart(props) {
     const series = new TimeSeries({
         name: "hilo_rainfall",
-        columns: ["index", "value"],
+        columns: ["time", "value"],
         points: props.data.values.map(([d, value]) => [
-          Index.getIndexString("1h", new Date(d)),
+        // points: data.values.map(([d, value]) => [
+          // Index.getIndexString("1h", new Date(d)),
+          new Date(d).getTime(),
           value
         ])
       });
@@ -33,7 +36,7 @@ export default function FlowrateChart(props) {
               <Resizable>
                 <ChartContainer timeRange={series.range()}>
                   <ChartRow height="150">
-                      <YAxis id="flowrate" label="Flowrate (m3/h)" width="70" type="linear" max={12} />
+                      <YAxis id="flowrate" label="Flowrate (m3/h)" width="70" type="linear" max={props.data.maxVal} />
                       <Charts>
                         <LineChart
                             axis="flowrate"
