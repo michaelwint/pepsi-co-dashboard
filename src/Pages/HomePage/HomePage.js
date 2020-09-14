@@ -6,12 +6,12 @@ import Toast from 'react-bootstrap/Toast'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import FlowrateGauge from '../../Components/FlowrateGauge/FlowrateGauge'
-import AlertTable from '../../Components/AlertTable/AlertTable'
+import AnomaliesTable from '../../Components/AnomaliesTable/AnomaliesTable'
 import Spinner from 'react-bootstrap/Spinner'
 import { FaSync } from 'react-icons/fa'
 import { store } from '../../Store/store'
 import { homePageStore } from '../../Store/homePageStore'
-import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE, LOAD_HARD_SOFT_FLOWRATES, LOAD_UNACCOUNTED_FLOWRATES } from '../../Store/ActionTypes/actionTypes'
+import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE, LOAD_HARD_SOFT_FLOWRATES, LOAD_UNACCOUNTED_FLOWRATES, LOAD_ANOMALIES_DATA } from '../../Store/ActionTypes/actionTypes'
 import { isEmptyObject } from 'jquery'
 import FlowrateChart from '../../Components/FlowrateChart/FlowrateChart';
 import { MDBCard, MDBContainer } from "mdbreact"
@@ -30,6 +30,7 @@ export default function HomePage(props) {
     const hardWaterData = useContext(store).state.HomePage.hardWaterData;
     const softWaterData = useContext(store).state.HomePage.softWaterData;
     const unaccountedFlowratesData = useContext(store).state.HomePage.unaccountedFlowratesData;
+    const anomaliesData = useContext(store).state.HomePage.anomaliesData;
     const [showAlert, setShowAlert] = useState(false);
 
     const displayError = (error) => {
@@ -137,8 +138,17 @@ export default function HomePage(props) {
         }).catch(error => displayError(error)).then(() => {
 
             // Load the Anomalies
-            axios.get(serverUrl + "anomalies/latest?secondsBack=360&hasEndTime=false").then(response => {
+            axios.get(serverUrl + "anomalies/last?limit=200").then(response => {
+                let customData = [];
 
+                response.data.map((currVal) => {
+                    customData.push({
+                        message: currVal.message,
+                        detectionTime: new Date(currVal.detectionTime).toLocaleString()
+                    })
+                })
+
+                dispatch({ type: LOAD_ANOMALIES_DATA, payload: customData })
                 dispatch({ type: LOADING_FINISHED });
             })
         }).catch(error => displayError(error))
@@ -190,7 +200,7 @@ export default function HomePage(props) {
                     <FlowrateChart title="Soft Water" data={softWaterData} color={"teal"}></FlowrateChart>
                     <BarChart title="Unaccounted Flowrates" data={unaccountedFlowratesData}></BarChart>
                     <br />
-                    <AlertTable></AlertTable>
+                    <AnomaliesTable data={anomaliesData}></AnomaliesTable>
                 </Col>
                 <Col xs={6}>
                     <Row>

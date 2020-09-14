@@ -1,5 +1,5 @@
 import React, {createContext, useReducer} from 'react';
-import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE, LOAD_HARD_SOFT_FLOWRATES, LOAD_UNACCOUNTED_FLOWRATES } from './ActionTypes/actionTypes'
+import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE, LOAD_HARD_SOFT_FLOWRATES, LOAD_UNACCOUNTED_FLOWRATES, LOAD_ANOMALIES_DATA } from './ActionTypes/actionTypes'
 
 const initialState = {
     serverUrl: "http://industrial-modeler-poc-1998904937.eu-west-1.elb.amazonaws.com:9010/api/",
@@ -11,7 +11,8 @@ const initialState = {
       hardWaterData: {},
       softWaterData: {},
       unaccountedFlowratesData: {},
-      refreshRate: 5000
+      refreshRate: 5000,
+      anomaliesData: {}
     }
 };
 const store = createContext(initialState);
@@ -71,14 +72,23 @@ const StateProvider = ( { children } ) => {
             }
           }
 
-        case LOAD_UNACCOUNTED_FLOWRATES:
-          return {
-            ...state,
-            HomePage: {
-              ...state.HomePage,
-              unaccountedFlowratesData: action.payload
+          case LOAD_UNACCOUNTED_FLOWRATES:
+            return {
+              ...state,
+              HomePage: {
+                ...state.HomePage,
+                unaccountedFlowratesData: action.payload
+              }
             }
-          }
+
+          case LOAD_ANOMALIES_DATA:
+            return {
+              ...state,
+              HomePage: {
+                ...state.HomePage,
+                anomaliesData: action.payload
+              }
+            }
       default:
         throw new Error();
     };

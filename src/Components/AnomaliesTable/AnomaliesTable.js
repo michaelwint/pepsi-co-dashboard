@@ -1,11 +1,12 @@
 import React from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import './AlertTable.css'
+import './AnomaliesTable.css'
 
-export default function AlertTable(props) {
+export default function AnomaliesTable(props) {
     const columns = [
-        { dataField: 'message', text: 'Anomalies' }
+        { dataField: 'message', text: 'Anomalies' },
+        { dataField: 'detectionTime', text: 'Detection Time' }
     ]
 
     const paginationOptions = {
@@ -26,7 +27,7 @@ export default function AlertTable(props) {
     return (
         <BootstrapTable
             keyField='id'
-            data={[]}
+            data={props.data}
             columns={ columns }
             rowClasses={ rowClasses }
             pagination={ paginationFactory(paginationOptions) }
