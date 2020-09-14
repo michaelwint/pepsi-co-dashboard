@@ -149,24 +149,14 @@ export default function HomePage(props) {
 
     return (
         <Container fluid>
-            <Row>
-                <Col xs={2}>
-                    <Row>
-                        <Col xs={2}>
-                            <Button variant="primary" disabled={isLoading} onClick={onRefreshClick}>
-                                { isLoading ? <Spinner animation="border" size="sm"/> : <FaSync></FaSync> }
-                            </Button>
-                        </Col>
-                        {/* <Col xs={2}>
-                            <DropdownButton title={(refreshRate / 1000) + "s"}>
-                                <Dropdown.Item onSelect={() => setRefreshRate(5000)}>5s</Dropdown.Item>
-                                <Dropdown.Item onSelect={() => setRefreshRate(10000)}>10s</Dropdown.Item>
-                                <Dropdown.Item onSelect={() => setRefreshRate(30000)}>30s</Dropdown.Item>
-                            </DropdownButton>
-                        </Col> */}
-                    </Row>
-                </Col>
-            </Row>
+            <Button className="refresh-button" variant="primary" disabled={isLoading} onClick={onRefreshClick}>
+                { isLoading ? <Spinner animation="border" size="sm"/> : <FaSync></FaSync> }
+            </Button>
+            {/* <DropdownButton title={(refreshRate / 1000) + "s"}>
+                <Dropdown.Item onSelect={() => setRefreshRate(5000)}>5s</Dropdown.Item>
+                <Dropdown.Item onSelect={() => setRefreshRate(10000)}>10s</Dropdown.Item>
+                <Dropdown.Item onSelect={() => setRefreshRate(30000)}>30s</Dropdown.Item>
+            </DropdownButton> */}
             { !isEmptyObject(valveGroupCurrentFlowrates) && !isEmptyObject(hardWaterData) && !isEmptyObject(softWaterData) &&
             <Row>
                 <Col xs={6}>
