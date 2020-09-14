@@ -25,11 +25,9 @@ export default function FlowrateChart(props) {
 
     return (
       <Container className="graph-chart-container">
-        <MDBContainer>
-                <MDBCard>
           <Row>
               <Col>
-                  {props.title}
+                  <strong>{props.title}</strong>
               </Col>
           </Row>
           <Row>
@@ -53,8 +51,6 @@ export default function FlowrateChart(props) {
               </Resizable>
               </Col>
           </Row>
-          </MDBCard>
-          </MDBContainer>
       </Container>
     )
 }

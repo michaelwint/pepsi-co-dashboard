@@ -1,19 +1,17 @@
 import React, { useState, useContext, useEffect } from 'react';
 
-import Container from 'react-bootstrap/Container'
+import { Container, Row, Col } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
 import Toast from 'react-bootstrap/Toast'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 import FlowrateGauge from '../../Components/FlowrateGauge/FlowrateGauge'
 import AlertTable from '../../Components/AlertTable/AlertTable'
 import Spinner from 'react-bootstrap/Spinner'
 import { FaSync } from 'react-icons/fa'
 import { store } from '../../Store/store'
 import { homePageStore } from '../../Store/homePageStore'
-import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE, LOAD_HARD_SOFT_FLOWRATES } from '../../Store/ActionTypes/actionTypes'
+import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE, LOAD_HARD_SOFT_FLOWRATES, LOAD_UNACCOUNTED_FLOWRATES } from '../../Store/ActionTypes/actionTypes'
 import { isEmptyObject } from 'jquery'
 import FlowrateChart from '../../Components/FlowrateChart/FlowrateChart';
 import { MDBCard, MDBContainer } from "mdbreact"
@@ -31,6 +29,7 @@ export default function HomePage(props) {
     const valveGroupCurrentFlowrates = useContext(store).state.HomePage.valveGroupCurrentFlowrates;
     const hardWaterData = useContext(store).state.HomePage.hardWaterData;
     const softWaterData = useContext(store).state.HomePage.softWaterData;
+    const unaccountedFlowratesData = useContext(store).state.HomePage.unaccountedFlowratesData;
     const [showAlert, setShowAlert] = useState(false);
 
     const displayError = (error) => {
@@ -44,7 +43,7 @@ export default function HomePage(props) {
 
         // Load the current Production flowrate in the main gauge
         await axios.get(serverUrl + "currentProductionFlowrates").then(response => {
-            let responseData = response.data._embedded.currentProductionFlowrates[0];
+            let responseData = response.data.content[0];
 
             let customData = {
                 title: responseData.product_name + " / Stage - " + responseData.stage_name + " " + responseData.stage_description,
@@ -66,7 +65,7 @@ export default function HomePage(props) {
 
             // Load the flowrate for every Valve Group
             axios.get(serverUrl + "valveGroupCurrentFlowrates").then(response => {
-                let responseData = response.data._embedded.valveGroupCurrentFlowrates;
+                let responseData = response.data.content;
                 let customData = [];
 
                 responseData.map((currValve) => {
@@ -90,7 +89,7 @@ export default function HomePage(props) {
             })
         }).catch(error => displayError(error)).then(() => {
 
-            // Load the Har d& Soft flowrates
+            // Load the Hard & Soft flowrates
             axios.get(serverUrl + "pepsicoSummary/latest?secondsBack=360").then(response => {
                 let responseData = response.data;
 
@@ -115,9 +114,34 @@ export default function HomePage(props) {
                 }
 
                 dispatch({ type: LOAD_HARD_SOFT_FLOWRATES, payload: { hardWaterData, softWaterData } })
+            })
+        }).catch(error => displayError(error)).then(() => {
+
+            // Load the Unaccounted Sources Flowrates
+            axios.get(serverUrl + "flowrateChanges/last?limit=20").then(response => {
+                let customData = {
+                    maxVal: 0,
+                    minVal: 0,
+                    values: []
+                };
+
+                // Init Hard & Soft Water given values
+                for (let i = response.data.length - 1; i >= 0; i--) {
+                    customData.maxVal = (customData.maxVal < response.data[i].model_k_a_delta) ? response.data[i].model_k_a_delta : customData.maxVal;
+                    customData.minVal = (customData.minVal > response.data[i].model_k_a_delta) ? response.data[i].model_k_a_delta : customData.minVal;
+                    customData.values.push([response.data[i].startTime, response.data[i].model_k_a_delta]);
+                }
+
+                dispatch({ type: LOAD_UNACCOUNTED_FLOWRATES, payload: customData })
+            })
+        }).catch(error => displayError(error)).then(() => {
+
+            // Load the Anomalies
+            axios.get(serverUrl + "anomalies/latest?secondsBack=360&hasEndTime=false").then(response => {
+
                 dispatch({ type: LOADING_FINISHED });
-            }).catch(error => displayError(error))
-        })
+            })
+        }).catch(error => displayError(error))
     }
 
     // Load the data on component initial mount
@@ -160,15 +184,11 @@ export default function HomePage(props) {
             { !isEmptyObject(valveGroupCurrentFlowrates) && !isEmptyObject(hardWaterData) && !isEmptyObject(softWaterData) &&
             <Row>
                 <Col xs={6}>
-                    <MDBContainer>
-                        <MDBCard>
-                            <FlowrateGauge data={currentProductionFlowrates}></FlowrateGauge>
-                        </MDBCard>
-                    </MDBContainer>
+                    <FlowrateGauge data={currentProductionFlowrates}></FlowrateGauge>
                     <br /><br /><br />
                     <FlowrateChart title="Hard Water" data={hardWaterData} color={"green"}></FlowrateChart>
                     <FlowrateChart title="Soft Water" data={softWaterData} color={"teal"}></FlowrateChart>
-                    <BarChart title="something idk"></BarChart>
+                    <BarChart title="Unaccounted Flowrates" data={unaccountedFlowratesData}></BarChart>
                     <br />
                     <AlertTable></AlertTable>
                 </Col>
@@ -185,7 +205,7 @@ export default function HomePage(props) {
             }
             <div style={{ position: 'absolute', bottom: 0, left: 0, width: '300px', margin: '20px'}} >
                 <Toast style={{color: 'white', backgroundColor: '#ff3043'}} autohide show={showAlert} onClose={() => setShowAlert(false)} >
-                    <Toast.Body><strong >Error loading information</strong></Toast.Body>
+                    <Toast.Body><strong>Error loading information</strong></Toast.Body>
                 </Toast>
             </div>
         </Container>
