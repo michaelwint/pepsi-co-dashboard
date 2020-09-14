@@ -18,6 +18,7 @@ import { isEmptyObject } from 'jquery'
 import FlowrateChart from '../../Components/FlowrateChart/FlowrateChart';
 
 import './HomePage.css'
+import BarChart from '../../Components/BarChart/BarChart';
 
 export default function HomePage(props) {
     const axios = require('axios').default;
@@ -106,23 +107,11 @@ export default function HomePage(props) {
                     values: []
                 };
 
+                // Init Hard & Soft Water given values
                 for (let i = responseData.summaries.length - 1; i >= 0; i--) {
                     hardWaterData.values.push([responseData.summaries[i].timestamp, responseData.summaries[i].h2O_Hard]);
                     softWaterData.values.push([responseData.summaries[i].timestamp, responseData.summaries[i].h2O_Zacht]);
                 }
-
-                // Init Hard & Soft Water given values
-                // responseData.summaries.map((currVal) => {
-                //     // hardWaterData.values.push({
-                //     //     timestamp: currVal.timestamp,
-                //     //     measure: currVal.h2O_Hard
-                //     // });
-
-                //     hardWaterData.values.push([currVal.timestamp, currVal.h2O_Hard * 100]);
-                //     softWaterData.values.push([currVal.timestamp, currVal.h2O_Zacht]);
-                // })
-
-                console.log(hardWaterData);
 
                 dispatch({ type: LOAD_HARD_SOFT_FLOWRATES, payload: { hardWaterData, softWaterData } })
                 dispatch({ type: LOADING_FINISHED });
@@ -184,6 +173,7 @@ export default function HomePage(props) {
                     <br /><br /><br />
                     <FlowrateChart title="Hard Water" data={hardWaterData} color={"green"}></FlowrateChart>
                     <FlowrateChart title="Soft Water" data={softWaterData} color={"teal"}></FlowrateChart>
+                    <BarChart title="something idk"></BarChart>
                     <AlertTable></AlertTable>
                 </Col>
                 <Col xs={6}>

@@ -1,3 +1,9 @@
 .gauge-container {
-    height: 300px;
+    width: 300px;
+}
+
+.panel-container {
+  border-width: 3px;
+  border-color: black;
+  border-radius: 25%;
 }

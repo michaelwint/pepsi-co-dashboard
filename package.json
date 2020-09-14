@@ -11,6 +11,7 @@
     "bootstrap": "^4.5.2",
     "canvasjs": "^1.8.3",
     "jquery": "^3.5.1",
+    "mdbreact": "^4.27.0",
     "nivo": "^0.31.0",
     "pondjs": "^0.9.0",
     "popper.js": "^1.16.1",
@@ -26,7 +27,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "react-timeseries-charts": "^0.16.1",
-    "recharts": "^1.8.5"
+    "recharts": "^1.8.5",
+    "victory": "^35.0.9"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,16 +1,15 @@
 import React from 'react';
-import data from './data'
 import { TimeSeries, Index } from "pondjs";
 import { Container, Row, Col } from 'react-bootstrap'
 import { Resizable, Charts, ChartContainer, ChartRow, YAxis, LineChart, Baseline, styler} from "react-timeseries-charts";
+import { MDBCard, MDBCardTitle, MDBCardText, MDBCardBody, MDBContainer } from "mdbreact"
+import './FlowrateChart.css';
 
 export default function FlowrateChart(props) {
     const series = new TimeSeries({
-        name: "hilo_rainfall",
+        name: "flowrate_timeseries",
         columns: ["time", "value"],
         points: props.data.values.map(([d, value]) => [
-        // points: data.values.map(([d, value]) => [
-          // Index.getIndexString("1h", new Date(d)),
           new Date(d).getTime(),
           value
         ])
@@ -25,7 +24,9 @@ export default function FlowrateChart(props) {
       ]);
 
     return (
-      <Container>
+      <Container className="graph-chart-container">
+        <MDBContainer>
+                <MDBCard>
           <Row>
               <Col>
                   {props.title}
@@ -44,7 +45,6 @@ export default function FlowrateChart(props) {
                             spacing={1}
                             columns={["value"]}
                             series={series}
-                            minBarHeight={1}
                         />
                         <Baseline axis="flowrate" style={style} value={series.avg()} label="Avg"/>
                       </Charts>
@@ -53,6 +53,8 @@ export default function FlowrateChart(props) {
               </Resizable>
               </Col>
           </Row>
+          </MDBCard>
+          </MDBContainer>
       </Container>
     )
 }
