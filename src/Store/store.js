@@ -11,7 +11,7 @@ const initialState = {
       hardWaterData: {},
       softWaterData: {},
       unaccountedFlowratesData: {},
-      refreshRate: 5000,
+      refreshRate: 1500,
       anomaliesData: {}
     }
 };
