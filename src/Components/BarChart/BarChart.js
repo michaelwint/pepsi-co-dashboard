@@ -3,6 +3,7 @@ import { Resizable, Charts, ChartContainer, ChartRow, YAxis, BarChart as BaseBar
 import { Container, Row, Col } from 'react-bootstrap'
 import { TimeSeries, Index } from 'pondjs';
 import Baseline from 'react-timeseries-charts/lib/components/Baseline';
+import { MDBCard, MDBContainer } from "mdbreact"
 
 export default function BarChart(props) {
     const data = [
@@ -28,39 +29,43 @@ export default function BarChart(props) {
 
     return (
         <Container>
-            <Row>
-                <Col>
-                    {props.title}
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                <Resizable>
-                    <ChartContainer timeRange={series.range()} >
-                        <ChartRow height="150">
-                            <YAxis
-                                id="rain"
-                                label="Rainfall (inches/hr)"
-                                width="70"
-                                type="linear"
-                                max={1}
-                                min={-1}
-                            />
-                            <Charts>
-                                <BaseBarChart
-                                    axis="rain"
-                                    style={style}
-                                    spacing={1}
-                                    columns={["value"]}
-                                    series={series}
-                                />
-                                <Baseline axis="rain" style={style} value={0} />
-                            </Charts>
-                        </ChartRow>
-                    </ChartContainer>
-                </Resizable>
-                </Col>
-            </Row>
+            <MDBContainer>
+                <MDBCard>
+                    <Row>
+                        <Col>
+                            <strong>{props.title}</strong>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <Resizable>
+                                <ChartContainer timeRange={series.range()} >
+                                    <ChartRow height="150">
+                                        <YAxis
+                                            id="rain"
+                                            label="Flowrate (m3/h)"
+                                            width="70"
+                                            type="linear"
+                                            max={1}
+                                            min={-1}
+                                        />
+                                        <Charts>
+                                            <BaseBarChart
+                                                axis="rain"
+                                                style={style}
+                                                spacing={1}
+                                                columns={["value"]}
+                                                series={series}
+                                            />
+                                            <Baseline axis="rain" style={style} value={0} />
+                                        </Charts>
+                                    </ChartRow>
+                                </ChartContainer>
+                            </Resizable>
+                        </Col>
+                    </Row>
+                </MDBCard>
+            </MDBContainer>
         </Container>
 
     )

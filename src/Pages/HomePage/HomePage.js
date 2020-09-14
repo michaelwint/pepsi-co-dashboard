@@ -16,6 +16,7 @@ import { homePageStore } from '../../Store/homePageStore'
 import { LOADING_STARTED, LOADING_FINISHED, LOAD_CURRENT_PROD_SEGMENT_FLOWRATES, LOAD_VALVE_GROUP_CURRENT_FLOWRATES, SET_REFRESH_RATE, LOAD_HARD_SOFT_FLOWRATES } from '../../Store/ActionTypes/actionTypes'
 import { isEmptyObject } from 'jquery'
 import FlowrateChart from '../../Components/FlowrateChart/FlowrateChart';
+import { MDBCard, MDBContainer } from "mdbreact"
 
 import './HomePage.css'
 import BarChart from '../../Components/BarChart/BarChart';
@@ -169,11 +170,16 @@ export default function HomePage(props) {
             { !isEmptyObject(valveGroupCurrentFlowrates) && !isEmptyObject(hardWaterData) && !isEmptyObject(softWaterData) &&
             <Row>
                 <Col xs={6}>
-                    <FlowrateGauge data={currentProductionFlowrates}></FlowrateGauge>
+                    <MDBContainer>
+                        <MDBCard>
+                            <FlowrateGauge data={currentProductionFlowrates}></FlowrateGauge>
+                        </MDBCard>
+                    </MDBContainer>
                     <br /><br /><br />
                     <FlowrateChart title="Hard Water" data={hardWaterData} color={"green"}></FlowrateChart>
                     <FlowrateChart title="Soft Water" data={softWaterData} color={"teal"}></FlowrateChart>
                     <BarChart title="something idk"></BarChart>
+                    <br />
                     <AlertTable></AlertTable>
                 </Col>
                 <Col xs={6}>
