@@ -7,7 +7,7 @@ export default function WintNavbar(props) {
         <Navbar bg="light" variant="light" expand="lg">
             <Navbar.Brand href="/">
                 <img
-                    src={require("../../Images/wint-logo-small.png")}
+                    src={require("../../Images/wint-pepsico-logo-small.png")}
                     alt="logo"
                 />
             </Navbar.Brand>

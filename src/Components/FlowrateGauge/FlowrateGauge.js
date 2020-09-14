@@ -13,7 +13,7 @@ export default function FlowrateGauge(props) {
         <Container fluid>
             <Row>
                 <Col>
-                    <h5>{props.data.title}</h5>
+                    <h6>{props.data.title}</h6>
                     <h6>{date}</h6>
                 </Col>
             </Row>
@@ -28,7 +28,7 @@ export default function FlowrateGauge(props) {
                         customSegmentStops={props.data.thresholds}
                         segmentColors={["crimson", "gold", "limegreen", "gold", "crimson"]}
                         value={parseFloat(props.data.value).toFixed(2)}
-                        width={props.data.size ? props.data.size : 270}
+                        width={props.data.size ? props.data.size : 300}
                         paddingVertical={30}
                         currentValueText={"${value} m3/h"}
                         needleTransition={'easeElastic'}

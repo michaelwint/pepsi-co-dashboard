@@ -5,8 +5,8 @@ import './AnomaliesTable.css'
 
 export default function AnomaliesTable(props) {
     const columns = [
-        { dataField: 'message', text: 'Anomalies' },
-        { dataField: 'detectionTime', text: 'Detection Time' }
+        { dataField: 'detectionTime', text: 'Detection Time' },
+        { dataField: 'message', text: 'Anomalies', align: 'left' }
     ]
 
     const paginationOptions = {

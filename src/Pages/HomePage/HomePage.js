@@ -205,7 +205,7 @@ export default function HomePage(props) {
                 <Col xs={6}>
                     <Row>
                         { valveGroupCurrentFlowrates.map((currValve) => {
-                            return <Col key={currValve.valvegroup_id} xs={4}>
+                            return <Col key={currValve.valvegroup_id} xs={6}>
                                 <FlowrateGauge data={currValve}></FlowrateGauge>
                             </Col>
                         })}
